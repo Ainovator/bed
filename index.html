@@ -1,0 +1,87 @@
+
+<!-- https://ainovator.github.io/Mattres/ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор кровати</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Подключение jQuery (перед toastr) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Подключение скрипта toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+
+    
+
+</head>
+<body>
+    <div class="container">
+        <h1>Калькулятор кроватей</h1>
+        <form id="calculator-form">
+            <div id="cant-image-container" class="image-container">
+                <img id="cant-image" src="images/Main.jpg" alt="Кант изображение" class="cant-image">
+                
+                <h2>Размеры</h2>
+                <div class="form-group">
+                    <label for="input-width">Введите ширину кровати в миллиметрах:</label>
+                    <input type="number" id="input-bed-width" min="0" class="form-control" value = 1000 required inputmode="numeric" pattern="^[0-9]*$">
+                </div>
+                
+            <div class="form-group" >
+                <label for="input-length">Введите длину кровати в миллиметрах:</label>
+                <input type="number" id="input-bed-length" min="0" class="form-control" value = 2000 required inputmode="numeric" pattern="^[0-9]*$"">
+            </div>
+            <div class="form-group" >
+                <label for="input-length">Введите толщину кровати в миллиметрах:</label>
+                <input type="number" id="input-bed-bold" min="0" class="form-control" value = 200 required inputmode="numeric" pattern="^[0-9]*$"">
+            </div>
+            <div class="form-group">
+                <label for="input-amount">Введите количество одинаковых кроватей:</label>
+                <input type="number" id="input-bed-amount" min ="0" class="form-control" value=1 required pattern="^[0-9]*$">
+            </div>     
+         
+            <div class="form-group">
+                <label for="input-amount">Введите цену ткани:</label>
+                <input type="number" min="0" id="input-textile-cost" value = 1000 class="form-control" required pattern="^[0-9]*$">
+            </div>
+        </form>
+
+        
+        <h2>Работы</h2>
+        <div class="form-group" >
+            <label for="input-length">Введите время всех работ в минутах:</label>
+            <input type="number" id="input-full-work" min="0" class="form-control" required inputmode="numeric" pattern="[0-9]">
+        </div>
+
+        <h2>Комментарии</h2>
+        <div class="form-group">
+            <label for="input-field">Комментарий к изделию</label>
+            <textarea id="input-field" placeholder="Комментарий к изделию"></textarea>
+        </div>
+    
+        <h2>Результаты</h2>
+        <div id="results">
+            <p id="textile-length"></p>
+            <p id="textile-cost"></p>
+            <p id="foam-cost"></p>
+            <p id="total-cost"></p>
+     
+        </div>
+
+        <div id="visualization">
+        <button type="button" onclick="visualize()" class="btn" id="visualize-button">Визуализировать</button>
+            <h2>Визуализация</h2>
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
