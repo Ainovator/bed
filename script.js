@@ -1,9 +1,14 @@
+//Динамические переменные
 let Bed_Length = parseInt(document.getElementById('input-bed-length').value)/1000 || 0;
 let Bed_Width = parseInt(document.getElementById('input-bed-width').value)/1000 || 0;
 let Bed_Bold = parseInt(document.getElementById('input-bed-bold').value)/1000 || 0;
 let Bed_Amount = parseInt(document.getElementById('input-bed-amount').value) || 0;
 let TextileCost = parseInt(document.getElementById('input-textile-cost').value) || 0;
 let Work_Amount = parseInt(document.getElementById('input-full-work').value) || 0;
+let Head_Heigth = parseInt(document.getElementById('input-head-heigth').value)/1000 || 0;
+let Head_Ledge = parseInt(document.getElementById('input-head-ledge').value)/1000 || 0;
+let Head_Whole = parseInt(document.getElementById('input-whole').value) || 0;
+let Head_Bold = parseInt(document.getElementById('input-head-bold').value)/1000 || 0;
 
 let TotalTextileCost = 0;
 let TextileWidth = 1.39;
@@ -15,9 +20,38 @@ let OnBoard = 0.1;
 let Oxford = 0;
 let FoamCost = 0;
 
-
+drawHeadboard()
 TotalOutput();
 
+// #region
+//Динамическое отслеживание цельности
+document.getElementById('input-whole').addEventListener('input', () => {
+    Head_Whole = document.getElementById('input-whole').checked ? 1 : 0;
+    console.log("Новое цельное: ", Head_Whole);
+    TotalOutput();
+    drawHeadboard();
+});
+//Динамическое отслеживание отступа
+document.getElementById('input-head-ledge').addEventListener('input', () => {
+    Head_Ledge = parseInt(document.getElementById('input-head-ledge').value)/1000 || 0;
+    console.log("Новый отступ: ", Head_Ledge)
+    TotalOutput();
+    drawHeadboard()
+});
+//Динамическое отслеживание высоты изголовья
+document.getElementById('input-head-heigth').addEventListener('input', () => {
+    Head_Heigth = parseInt(document.getElementById('input-head-heigth').value)/1000 || 0;
+    console.log("Новая высота: ", Head_Heigth)
+    TotalOutput();
+    drawHeadboard()
+});
+//Динамическое отслеживание толщины изголовья
+document.getElementById('input-head-bold').addEventListener('input', () => {
+    Head_Bold = parseInt(document.getElementById('input-head-bold').value)/1000 || 0;
+    console.log("Новая толщина: ", Head_Bold)
+    TotalOutput();
+    drawHeadboard()
+});
 //Динамическое отслеживание ширины кровати
 document.getElementById('input-bed-width').addEventListener('input', () => {
     Bed_Width = parseInt(document.getElementById('input-bed-width').value)/1000 || 0;
@@ -55,8 +89,7 @@ document.getElementById('input-full-work').addEventListener('input', () => {
     console.log("Новые работы: ", Work_Amount)
     TotalOutput();
 });
-
-
+// #endregion
 
 function calculateTotalCost(){
     TotalCost = (TotalTextileCost + FoamCost + WorkCost)*1.2*1.6*1.3;
@@ -93,22 +126,60 @@ function calculateTextileCost(){
 }
 // Функция расчета пены
 function calculateFoam(){
-    FoamCost = ((Bed_Width-0.2) * (Bed_Length-0.1) * Bed_Bold * 23 * 410) + //Расчёт НПЭ
-            ((Bed_Width-0.2)*(Bed_Bold)*0.1*30*572) + //Расчёт передней отбортовки
-            ((Bed_Length*Bed_Bold    *2*0.1*30*572)); //Расчёт боковых отбортовок
+   if (Head_Whole === 1){
+        FoamCost = ((Bed_Width-0.2) * (Bed_Length-0.1) * Bed_Bold * 23 * 410) + //Расчёт НПЭ подиума
+                   ((Bed_Width-0.2)*(Bed_Bold)*0.1*30*572) + //Расчёт передней отбортовки подиума
+                   ((Bed_Length*Bed_Bold*2*0.1*30*572))+ //Расчёт боковых отбортовок подиума
+
+                   (((Head_Bold-0.05)*((Bed_Width+Head_Ledge-0.1)*(Head_Heigth-0.05)))*23*410)+ //Расчёт НПЭ изголовья
+                   (((Head_Heigth-0.05)*(Head_Bold-0.05)*0.05)*2*30*572)+ //Расчёт боковых отбортовок изголовья
+                   ((Bed_Width*Head_Bold*0.05*30*572))+ //Расчёт верхней отбортовки изголовья
+                   ((Bed_Width*Head_Heigth*0.05*30*572)); //Расчёт передней отбортовки изголовья
+                   console.log("Hui", Head_Bold, Bed_Width, Head_Ledge, Head_Heigth )
+
+   } else {
+        FoamCost = ((Bed_Width-0.2) * (Bed_Length-0.1) * Bed_Bold * 23 * 410) + //Расчёт НПЭ подиума
+                   ((Bed_Width-0.2)*(Bed_Bold)*0.1*30*572) + //Расчёт передней отбортовки подиума
+                   ((Bed_Length*Bed_Bold*2*0.1*30*572))+ //Расчёт боковых отбортовок подиума
+
+                   ((((Head_Bold-0.05)*((Bed_Width/2)+Head_Ledge)*(Head_Heigth-0.05)))*2*23*410)+ //Расчёт НПЭ изголовья
+                   (((Head_Heigth-0.05)*(Head_Bold-0.05)*0.05)*4*30*572)+ //Расчёт боковых отбортовок изголовья
+                   (((Bed_Width/2+Head_Ledge)*Head_Bold*0.05*2*30*572))+ //Расчёт верхней отбортовки изголовья
+                   (((Bed_Width/2+Head_Ledge)*Head_Heigth*0.05*2*30*572)); //Расчёт передней отбортовки изголовья
+
+   }
     console.log("Стоимость пены: ", FoamCost)
     return FoamCost;
+
 }
 
 
 //Раскладка деталей матраса исходя из размеров
 function countDetails() {
     let details = [];
-    for (let i = 0; i < Bed_Amount * 2; i++) {
-        details.push([Bed_Width + Bed_Bold*2 + ScaleUp*2, Bed_Bold + OnBoard + ScaleUp*2]);
-        details.push([Bed_Bold + OnBoard + ScaleUp*2, Bed_Length + Bed_Bold*2 + ScaleUp*2, ]);
+    if (Head_Whole === 1){
+        for (let i = 0; i < Bed_Amount * 2; i++) {
+            details.push([Bed_Width + Bed_Bold*2 + ScaleUp*2, Bed_Bold + OnBoard + ScaleUp*2]);
+            details.push([Bed_Bold + OnBoard + ScaleUp*2, Bed_Length + Bed_Bold*2 + ScaleUp*2, ]);
+            details.push([Bed_Width+Head_Ledge*2+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([Head_Bold+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([Bed_Width+Head_Ledge*2+ScaleUp*2, Head_Bold+ScaleUp*2]);
+            console.log("Детали 1", details)
+        }
+    } else {
+        for (let i = 0; i < Bed_Amount * 2; i++){
+            details.push([Bed_Width + Bed_Bold*2 + ScaleUp*2, Bed_Bold + OnBoard + ScaleUp*2]);
+            details.push([Bed_Bold + OnBoard + ScaleUp*2, Bed_Length + Bed_Bold*2 + ScaleUp*2, ]);
+            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([Head_Bold+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Bold+ScaleUp*2]);
+            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([Head_Bold+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Bold+ScaleUp*2]);
+            console.log("Детали 2",details)
+        }
     }
-
+    
     return details;
 }
 //Раскладка деталей на рулоне
@@ -183,6 +254,39 @@ function bestFit(width, parts) {
         rollLength: minRollLength
     };
 }
+//Копирование текста в буфер обмена
+function copyToClipboard(text) {
+    const tempInput = document.createElement('input');
+    tempInput.style.position = 'absolute';
+    tempInput.style.left = '-9999px';
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    alert(`Скопировано в буфер обмена: ${text}`);
+}
+// #region <Декоративные обработки>
+toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": true,  // 'True' заменено на 'true'
+    "progressBar": true,
+    "positionClass": "toast-top-center",  // Позиция сверху по центру
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
+// #endregion <Декоративные обработки>
+
+
 //Визулаизация деталей на странице
 function visualize() {
     const canvas = document.getElementById('canvas');
@@ -270,43 +374,110 @@ function visualize() {
         }
     });
 }
+//Визулаизация изголовья
+function drawHeadboard() {
+    const canvas = document.getElementById('canvas-2');
+    const ctx = canvas.getContext('2d');
 
+    const bedWidth = parseInt(document.getElementById('input-bed-width').value) || 0;
+    const headLedge = parseInt(document.getElementById('input-head-ledge').value) || 0;
+    const headHeight = parseInt(document.getElementById('input-head-heigth').value) || 0;
+    const bedThickness = parseInt(document.getElementById('input-bed-bold').value) || 0;
+    const isWhole = document.getElementById('input-whole').checked;
 
+    // Ширина и высота основного прямоугольника (изголовье)
+    const rectWidth = bedWidth + headLedge * 2;
+    const rectHeight = headHeight;
 
+    // Ширина и высота дополнительного прямоугольника (основание кровати)
+    const bedRectWidth = bedWidth;
+    const bedRectHeight = bedThickness;
 
-//Копирование текста в буфер обмена
-function copyToClipboard(text) {
-    const tempInput = document.createElement('input');
-    tempInput.style.position = 'absolute';
-    tempInput.style.left = '-9999px';
-    tempInput.value = text;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand('copy');
-    document.body.removeChild(tempInput);
-    alert(`Скопировано в буфер обмена: ${text}`);
+    // Ширина экрана
+    const screenWidth = window.innerWidth - 20; // Учитываем отступы
+
+    // Определяем масштаб
+    const scale = rectWidth > screenWidth ? screenWidth / rectWidth : 1;
+
+    // Настройка размеров холста
+    canvas.width = rectWidth * scale;
+    canvas.height = (rectHeight + 100) * scale + 100; // Добавляем место для текста под холстом и отступ сверху
+
+    // Очищаем холст перед рисованием
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Масштабируем контекст рисования
+    ctx.scale(scale, scale);
+
+    // Отступ сверху
+    const topOffset = 100;
+
+    // Рисуем основной прямоугольник (изголовье)
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2 / scale; // Чтобы линия оставалась четкой после масштабирования
+    ctx.strokeRect(0, topOffset, rectWidth, rectHeight);
+
+    // Если цельное не отмечено, рисуем центральную линию
+    if (!isWhole) {
+        ctx.beginPath();
+        ctx.moveTo(rectWidth / 2, topOffset);
+        ctx.lineTo(rectWidth / 2, topOffset + rectHeight - bedThickness);
+        ctx.stroke();
+
+        // Вставляем текст "Изголовье-1" и "Изголовье-2" в центр прямоугольников
+        ctx.fillStyle = 'black';
+        ctx.font = '25px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Изголовье-1', rectWidth / 4, topOffset + headHeight / 2);
+
+        ctx.fillText('Изголовье-2', rectWidth - rectWidth / 4, topOffset + headHeight / 2);
+    } else {
+        ctx.fillStyle = 'black';
+        ctx.font = '25px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Изголовье', rectWidth / 2, topOffset + headHeight / 2);
+    }
+
+    // Рисуем контур дополнительного прямоугольника (основание кровати) снизу изголовья и по центру
+    const bedRectX = (rectWidth - bedRectWidth) / 2; // Центрируем по горизонтали
+    const bedRectY = topOffset + rectHeight - bedRectHeight; // Располагаем снизу внутри изголовья
+    ctx.strokeRect(bedRectX, bedRectY, bedRectWidth, bedRectHeight); // Рисуем рамку прямоугольника
+
+    // Вставляем текст "Подиум" в центр дополнительного прямоугольника
+    ctx.fillStyle = 'black';
+    ctx.font = '25px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Подиум', bedRectX + bedRectWidth / 2, bedRectY + bedRectHeight / 2);
+
+    // Добавляем размеры
+    ctx.fillStyle = 'black';
+    ctx.font = '25px Arial';
+    ctx.textAlign = 'center';
+
+    // Ширина кровати (внизу второго прямоугольника)
+    ctx.fillText(`${bedWidth} мм`, bedRectX + bedRectWidth / 2, topOffset + rectHeight - 20);
+
+    // Ширина изголовья (внутри прямоугольника, по центру)
+    ctx.fillText(`${rectWidth} мм`, rectWidth / 2, topOffset - 20);
+
+    // Высота изголовья (внутри прямоугольника, по центру)
+    ctx.save();
+    ctx.translate(25, topOffset + rectHeight / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText(`${rectHeight} мм`, 0, 0);
+    ctx.restore();
 }
 
 
-// #region <Декоративные обработки>
-toastr.options = {
-    "closeButton": false,
-    "debug": false,
-    "newestOnTop": true,  // 'True' заменено на 'true'
-    "progressBar": true,
-    "positionClass": "toast-top-center",  // Позиция сверху по центру
-    "preventDuplicates": false,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-};
-// #endregion <Декоративные обработки>
+
+
+
+
+
 
 
 
