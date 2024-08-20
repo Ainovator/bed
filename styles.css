@@ -373,7 +373,7 @@ h2 {
 .zipper {
     width: 100%;
     padding: 8px;
-    border: 1px solid black; /* Красная окантовка */
+    border: 1px solid  #ff0000; /* Красная окантовка */
     border-radius: 4px;
     font-size: 16px;
     box-sizing: border-box;

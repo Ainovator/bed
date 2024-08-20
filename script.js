@@ -1,8 +1,9 @@
 //Динамические переменные
-let Bed_Length = parseInt(document.getElementById('input-bed-length').value)/1000 || 0;
-let Bed_Width = parseInt(document.getElementById('input-bed-width').value)/1000 || 0;
+let Mattress_Length = parseInt(document.getElementById('input-bed-length').value)/1000 || 0;
+let Mattress_Width = parseInt(document.getElementById('input-bed-width').value)/1000 || 0;
 let Bed_Bold = parseInt(document.getElementById('input-bed-bold').value)/1000 || 0;
 let Bed_Amount = parseInt(document.getElementById('input-bed-amount').value) || 0;
+let Bed_Bort = parseInt(document.getElementById('input-bed-bort').value)/1000 || 0;
 let TextileCost = parseInt(document.getElementById('input-textile-cost').value) || 0;
 let Work_Amount = parseInt(document.getElementById('input-full-work').value) || 0;
 let Head_Heigth = parseInt(document.getElementById('input-head-heigth').value)/1000 || 0;
@@ -14,9 +15,9 @@ let TotalTextileCost = 0;
 let TextileWidth = 1.39;
 let TextileLength = 0;
 let TotalCost = 0;
-let WorkCost = 0;
+let WorkCost = Work_Amount*9;
 let ScaleUp = 0.02;
-let OnBoard = 0.1;
+let OnMattress = 0.05;
 let Oxford = 0;
 let FoamCost = 0;
 
@@ -54,14 +55,20 @@ document.getElementById('input-head-bold').addEventListener('input', () => {
 });
 //Динамическое отслеживание ширины кровати
 document.getElementById('input-bed-width').addEventListener('input', () => {
-    Bed_Width = parseInt(document.getElementById('input-bed-width').value)/1000 || 0;
-    console.log("Новая ширина: ", Bed_Width)
+    Mattress_Width = parseInt(document.getElementById('input-bed-width').value)/1000 || 0;
+    console.log("Новая ширина: ", Mattress_Width)
     TotalOutput();
 });
 //Динамическое отслеживание длины кровати
 document.getElementById('input-bed-length').addEventListener('input', () => {
-    Bed_Length = parseInt(document.getElementById('input-bed-length').value)/1000 || 0;
-    console.log("Новая длина: ", Bed_Length)
+    Mattress_Length = parseInt(document.getElementById('input-bed-length').value)/1000 || 0;
+    console.log("Новая длина: ", Mattress_Length)
+    TotalOutput();
+});
+//Динамическое отслеживание борта кровати
+document.getElementById('input-bed-bort').addEventListener('input', () => {
+    Bed_Bort = parseInt(document.getElementById('input-bed-bort').value)/1000 || 0;
+    console.log("Новый борт: ", Bed_Bort)
     TotalOutput();
 });
 //Динамическое отслеживание толщины кровати
@@ -85,7 +92,7 @@ document.getElementById('input-textile-cost').addEventListener('input', () => {
 //Динамическое отслеживание количества работ
 document.getElementById('input-full-work').addEventListener('input', () => {
     Work_Amount = parseInt(document.getElementById('input-full-work').value) || 0;
-    WorkCost = Work_Amount*9;
+    let WorkCost = Work_Amount*9;
     console.log("Новые работы: ", Work_Amount)
     TotalOutput();
 });
@@ -119,7 +126,7 @@ function calculateTextileLength() {
 }
 // Функция расчета отреза ткани
 function calculateTextileCost(){
-    Oxford = ((Bed_Length+Bed_Length-OnBoard*2) * 109);
+    Oxford = ((Mattress_Length+Mattress_Length-OnMattress*2) * 109);
     TotalTextileCost = (TextileCost * TextileLength) + Oxford;
     console.log("Стоимость оксфорда: ", Oxford);
     return Oxford;
@@ -127,25 +134,25 @@ function calculateTextileCost(){
 // Функция расчета пены
 function calculateFoam(){
    if (Head_Whole === 1){
-        FoamCost = ((Bed_Width-0.2) * (Bed_Length-0.1) * Bed_Bold * 23 * 410) + //Расчёт НПЭ подиума
-                   ((Bed_Width-0.2)*(Bed_Bold)*0.1*30*572) + //Расчёт передней отбортовки подиума
-                   ((Bed_Length*Bed_Bold*2*0.1*30*572))+ //Расчёт боковых отбортовок подиума
+        FoamCost = ((Mattress_Width) * (Mattress_Length) * Bed_Bold * 23 * 410) + //Расчёт НПЭ подиума
+                   (Mattress_Width*Bed_Bold*Bed_Bort*30*572) + //Расчёт передней отбортовки подиума
+                   ((Mattress_Length+Bed_Bort)*Bed_Bold*Bed_Bort*2*30*572)+ //Расчёт боковых отбортовок подиума
 
-                   (((Head_Bold-0.05)*((Bed_Width+Head_Ledge-0.1)*(Head_Heigth-0.05)))*23*410)+ //Расчёт НПЭ изголовья
+                   (((Head_Bold-0.05)*((Mattress_Width+Head_Ledge-0.1)*(Head_Heigth-0.05)))*23*410)+ //Расчёт НПЭ изголовья
                    (((Head_Heigth-0.05)*(Head_Bold-0.05)*0.05)*2*30*572)+ //Расчёт боковых отбортовок изголовья
-                   ((Bed_Width*Head_Bold*0.05*30*572))+ //Расчёт верхней отбортовки изголовья
-                   ((Bed_Width*Head_Heigth*0.05*30*572)); //Расчёт передней отбортовки изголовья
-                   console.log("Hui", Head_Bold, Bed_Width, Head_Ledge, Head_Heigth )
+                   ((Mattress_Width*Head_Bold*0.05*30*572))+ //Расчёт верхней отбортовки изголовья
+                   ((Mattress_Width*Head_Heigth*0.05*30*572)); //Расчёт передней отбортовки изголовья
+                   console.log("Hui", Head_Bold, Mattress_Width, Head_Ledge, Head_Heigth )
 
    } else {
-        FoamCost = ((Bed_Width-0.2) * (Bed_Length-0.1) * Bed_Bold * 23 * 410) + //Расчёт НПЭ подиума
-                   ((Bed_Width-0.2)*(Bed_Bold)*0.1*30*572) + //Расчёт передней отбортовки подиума
-                   ((Bed_Length*Bed_Bold*2*0.1*30*572))+ //Расчёт боковых отбортовок подиума
+        FoamCost = ((Mattress_Width) * (Mattress_Length) * Bed_Bold * 23 * 410) + //Расчёт НПЭ подиума
+                   (Mattress_Width*Bed_Bold*Bed_Bort*30*572) + //Расчёт передней отбортовки подиума
+                   ((Mattress_Length+Bed_Bort)*Bed_Bold*Bed_Bort*2*30*572)+ //Расчёт боковых отбортовок подиума
 
-                   ((((Head_Bold-0.05)*((Bed_Width/2)+Head_Ledge)*(Head_Heigth-0.05)))*2*23*410)+ //Расчёт НПЭ изголовья
+                   ((((Head_Bold-0.05)*((Mattress_Width/2)+Head_Ledge)*(Head_Heigth-0.05)))*2*23*410)+ //Расчёт НПЭ изголовья
                    (((Head_Heigth-0.05)*(Head_Bold-0.05)*0.05)*4*30*572)+ //Расчёт боковых отбортовок изголовья
-                   (((Bed_Width/2+Head_Ledge)*Head_Bold*0.05*2*30*572))+ //Расчёт верхней отбортовки изголовья
-                   (((Bed_Width/2+Head_Ledge)*Head_Heigth*0.05*2*30*572)); //Расчёт передней отбортовки изголовья
+                   (((Mattress_Width/2+Head_Ledge)*Head_Bold*0.05*2*30*572))+ //Расчёт верхней отбортовки изголовья
+                   (((Mattress_Width/2+Head_Ledge)*Head_Heigth*0.05*2*30*572)); //Расчёт передней отбортовки изголовья
 
    }
     console.log("Стоимость пены: ", FoamCost)
@@ -159,23 +166,24 @@ function countDetails() {
     let details = [];
     if (Head_Whole === 1){
         for (let i = 0; i < Bed_Amount * 2; i++) {
-            details.push([Bed_Width + Bed_Bold*2 + ScaleUp*2, Bed_Bold + OnBoard + ScaleUp*2]);
-            details.push([Bed_Bold + OnBoard + ScaleUp*2, Bed_Length + Bed_Bold*2 + ScaleUp*2, ]);
-            details.push([Bed_Width+Head_Ledge*2+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([(Mattress_Width+Bed_Bort*2+Bed_Bold*2+ScaleUp*2), (Bed_Bold+Bed_Bort+OnMattress+ScaleUp*2)]);
+            details.push([(Bed_Bold + Bed_Bort + OnMattress + ScaleUp*2), (Mattress_Length + Bed_Bold*2 + Bed_Bort*2 + ScaleUp*2)]);
+
+            details.push([Mattress_Width+Head_Ledge*2+ScaleUp*2, Head_Heigth+ScaleUp*2]);
             details.push([Head_Bold+ScaleUp*2, Head_Heigth+ScaleUp*2]);
-            details.push([Bed_Width+Head_Ledge*2+ScaleUp*2, Head_Bold+ScaleUp*2]);
+            details.push([Mattress_Width+Head_Ledge*2+ScaleUp*2, Head_Bold+ScaleUp*2]);
             console.log("Детали 1", details)
         }
     } else {
         for (let i = 0; i < Bed_Amount * 2; i++){
-            details.push([Bed_Width + Bed_Bold*2 + ScaleUp*2, Bed_Bold + OnBoard + ScaleUp*2]);
-            details.push([Bed_Bold + OnBoard + ScaleUp*2, Bed_Length + Bed_Bold*2 + ScaleUp*2, ]);
-            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([(Mattress_Width+Bed_Bort*2+Bed_Bold*2+ScaleUp*2), (Bed_Bold+Bed_Bort+OnMattress+ScaleUp*2)]);
+            details.push([(Bed_Bold + Bed_Bort + OnMattress + ScaleUp*2), (Mattress_Length + Bed_Bold*2 + Bed_Bort*2 + ScaleUp*2)]);
+            details.push([(Mattress_Width/2+Head_Ledge)+ScaleUp*2, Head_Heigth+ScaleUp*2]);
             details.push([Head_Bold+ScaleUp*2, Head_Heigth+ScaleUp*2]);
-            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Bold+ScaleUp*2]);
-            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Heigth+ScaleUp*2]);
+            details.push([(Mattress_Width/2+Head_Ledge)+ScaleUp*2, Head_Bold+ScaleUp*2]);
+            details.push([(Mattress_Width/2+Head_Ledge)+ScaleUp*2, Head_Heigth+ScaleUp*2]);
             details.push([Head_Bold+ScaleUp*2, Head_Heigth+ScaleUp*2]);
-            details.push([(Bed_Width/2+Head_Ledge)+ScaleUp*2, Head_Bold+ScaleUp*2]);
+            details.push([(Mattress_Width/2+Head_Ledge)+ScaleUp*2, Head_Bold+ScaleUp*2]);
             console.log("Детали 2",details)
         }
     }
